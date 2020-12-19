@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 const api = axios.create({
@@ -8,48 +8,80 @@ const api = axios.create({
   },
 });
 
+const PERIODS = [
+  "2019-01",
+  "2019-02",
+  "2019-03",
+  "2019-04",
+  "2019-06",
+  "2019-06",
+  "2019-07",
+  "2019-08",
+  "2019-09",
+  "2019-10",
+  "2019-11",
+  "2019-12",
+  "2020-01",
+  "2020-02",
+  "2020-03",
+  "2020-04",
+  "2020-05",
+  "2020-06",
+  "2020-07",
+  "2020-08",
+  "2020-09",
+  "2020-10",
+  "2020-11",
+  "2020-12",
+  "2021-01",
+];
+
 export default function App() {
-  const [transactions, setTransactions] = React.useState([]);
-  const [currentPeriod, setCurrentPeriod] = React.useState("2019-01");
+  const [allGrades, setAllGrades] = useState([]);
+  const [yearMonth, setYearMonth] = useState("2020-07");
 
   React.useEffect(() => {
     const fetchTransactions = async () => {
       // const axiosObject = await api.get("/transaction?period=2019-07");//axiosObject - demonstra toda estrutura do objeto
-      const { data } = await api.get(`/transaction?period=${currentPeriod}`); //pegando somente o que interessa do vetor de objeto
+      const { data } = await api.get(`/transaction?period=${yearMonth}`); //pegando somente o que interessa do vetor de objeto
       // console.log(axiosObject);
       console.log(data);
 
-      setTransactions(data.transactions);
+      setAllGrades(data.transactions);
     };
     fetchTransactions();
-  }, [currentPeriod]);
+  }, [yearMonth]);
 
-  const handlePeriodChange = (event) => {
-    setCurrentPeriod(event.target.value);
-  };
+  //lançamentos
+  const handlePeriodChange=(event)=>{
+    const newPeriod= event.target.value
+    setYearMonth(newPeriod)
+  }
+
+
 
   return (
     <div className="container">
       <h1 className="center">Desafio Final do Bootcamp full Stack</h1>
-      <div style={{ textAlign: 'center' }}>
-      <form>
-        <input
-          className="input-field "
-          onChange={handlePeriodChange}
-          type="month"
-          key="Yearmonth"
-          value={currentPeriod}
-        />
-      </form>
-    </div>
+      <select
+        className="browser-default"
+        value={yearMonth}
+        onChange={handlePeriodChange}
+      >
+        {PERIODS.map((period) => {
+          return <option>{period}</option>;
+        })}
+      </select>
 
+      
 
-      {transactions.map(
+      {allGrades.map(
         ({ _id, yearMonthDay, category, description, value }) => {
           return (
-            <div key={_id}>
-              <span style={{ margin: 7 }} key={_id}>
-                {yearMonthDay}-<strong>{category}</strong>-{description}-{value}
+            <div>
+              <span style={{ margin: 7 }}>
+                {yearMonthDay}-<strong>{category}</strong>-{description}-
+                {value}
               </span>
             </div>
           );
@@ -58,3 +90,13 @@ export default function App() {
     </div>
   );
 }
+
+const styles = {
+  transactionStyle: {
+    padding: "5px",
+    margin: "5px",
+    border: "1px solid lightgray",
+    borderRadius: "5px",
+    shadowColor: "3px",
+  },
+};
